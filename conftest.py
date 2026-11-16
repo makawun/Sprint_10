@@ -3,8 +3,6 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from data.addresses import Addresses
-from data.taxi_texts import TaxiTexts
 from pages.added_address_page import AddedAddressPage
 from pages.base_page import BasePage
 from pages.confirm_order_page import ConfirmOrderPage
@@ -52,41 +50,6 @@ def waiting_taxi_page(driver):
 @pytest.fixture
 def confirm_order_page(driver):
     return ConfirmOrderPage(driver)
-
-
-@pytest.fixture
-def addresses_entered(main_page):
-    main_page.enter_from_address(Addresses.FROM_ADDRESS)
-    main_page.enter_to_address(Addresses.TO_ADDRESS)
-
-
-@pytest.fixture
-def same_address_entered(main_page):
-    main_page.enter_from_address(Addresses.FROM_ADDRESS)
-    main_page.enter_to_address(Addresses.FROM_ADDRESS)
-
-
-@pytest.fixture
-def taxi_form_opened(addresses_entered, added_address_page):
-    added_address_page.click_fast_mode()
-    added_address_page.click_call_taxi()
-
-
-@pytest.fixture
-def tariff_price(taxi_form_opened, taxi_page):
-    return taxi_page.get_tariff_price(TaxiTexts.DEFAULT_ORDER_TARIFF)
-
-
-@pytest.fixture
-def order_placed(taxi_form_opened, tariff_price, taxi_page):
-    taxi_page.select_tariff(TaxiTexts.DEFAULT_ORDER_TARIFF)
-    taxi_page.toggle_laptop_table()
-    taxi_page.click_order()
-
-
-@pytest.fixture
-def confirmed_order(order_placed, confirm_order_page):
-    confirm_order_page.wait_confirm_header()
 
 
 @pytest.hookimpl(hookwrapper=True)
