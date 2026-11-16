@@ -45,10 +45,34 @@ class BasePage:
             .pause(pause) \
             .perform()
 
+    def wait_visible(self, locator, timeout=10):
+        WebDriverWait(self.driver, timeout).until(
+            EC.visibility_of_element_located(locator)
+        )
+
+    def wait_presence(self, locator, timeout=10):
+        WebDriverWait(self.driver, timeout).until(
+            EC.presence_of_element_located(locator)
+        )
+
+    def wait_text_not_empty(self, locator, timeout=10):
+        WebDriverWait(self.driver, timeout).until(
+            lambda d: d.find_element(*locator).text.strip() != ""
+        )
+
     def is_present(self, locator, timeout=10):
         try:
             WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located(locator)
+            )
+            return True
+        except TimeoutException:
+            return False
+
+    def is_visible(self, locator, timeout=10):
+        try:
+            WebDriverWait(self.driver, timeout).until(
+                EC.visibility_of_element_located(locator)
             )
             return True
         except TimeoutException:

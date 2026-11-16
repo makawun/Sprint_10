@@ -1,46 +1,22 @@
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-
 from locators.confirm_order_page_locators import ConfirmOrderPageLocators
 from pages.base_page import BasePage
 
 
 class ConfirmOrderPage(BasePage):
     def wait_confirm_header(self, timeout=120, settle_pause=1.0):
-        WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(
-                ConfirmOrderPageLocators.CONFIRM_HEADER
-            )
-        )
+        self.wait_visible(ConfirmOrderPageLocators.CONFIRM_HEADER, timeout)
         self.pause(settle_pause)
-        WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(
-                ConfirmOrderPageLocators.CONFIRM_HEADER
-            )
-        )
+        self.wait_visible(ConfirmOrderPageLocators.CONFIRM_HEADER, timeout)
 
     def click_details(self, timeout=30):
         self.js_click(ConfirmOrderPageLocators.DETAILS_BUTTON)
-        WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(
-                ConfirmOrderPageLocators.DETAILS_BLOCK
-            )
-        )
+        self.wait_visible(ConfirmOrderPageLocators.DETAILS_BLOCK, timeout)
 
     def click_cancel(self):
         self.click(ConfirmOrderPageLocators.CANCEL_BUTTON)
 
     def is_details_block_visible(self, timeout=30):
-        try:
-            WebDriverWait(self.driver, timeout).until(
-                EC.visibility_of_element_located(
-                    ConfirmOrderPageLocators.DETAILS_BLOCK
-                )
-            )
-            return True
-        except TimeoutException:
-            return False
+        return self.is_visible(ConfirmOrderPageLocators.DETAILS_BLOCK, timeout)
 
     def is_confirm_header_visible(self, timeout=30):
         return self.is_present(

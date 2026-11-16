@@ -1,7 +1,3 @@
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-
 from data.taxi_texts import TaxiTexts
 from locators.taxi_page_locators import TaxiPageLocators
 from pages.base_page import BasePage
@@ -19,25 +15,20 @@ class TaxiPage(BasePage):
 
     def get_tariff_price(self, tariff_name, timeout=10):
         locator = self._format(TaxiPageLocators.TARIFF_PRICE, tariff_name)
-        WebDriverWait(self.driver, timeout).until(
-            lambda d: d.find_element(*locator).text.strip() != ""
-        )
+        self.wait_text_not_empty(locator, timeout)
         return self.get_text(locator)
 
     def select_tariff(self, tariff_name, timeout=10):
         self.js_click(self._format(TaxiPageLocators.TARIFF_CARD, tariff_name))
-        WebDriverWait(self.driver, timeout).until(
-            EC.presence_of_element_located(
-                self._format(TaxiPageLocators.ACTIVE_TARIFF_CARD, tariff_name)
-            )
+        self.wait_presence(
+            self._format(TaxiPageLocators.ACTIVE_TARIFF_CARD, tariff_name),
+            timeout,
         )
         self.pause(0.7)
 
     def hover_tariff_info(self, tariff_name, attempts=3, timeout=15):
         locator = self._format(TaxiPageLocators.INFORMATION_BUTTON, tariff_name)
-        WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(locator)
-        )
+        self.wait_visible(locator, timeout=10)
         reset_locator = self._format(
             TaxiPageLocators.TCARD, TaxiTexts.DEFAULT_ORDER_TARIFF
         )
@@ -50,13 +41,7 @@ class TaxiPage(BasePage):
 
     def is_tooltip_visible(self, tariff_name, timeout=15):
         locator = self._format(TaxiPageLocators.TOOLTIP, tariff_name)
-        try:
-            WebDriverWait(self.driver, timeout).until(
-                EC.visibility_of_element_located(locator)
-            )
-            return True
-        except TimeoutException:
-            return False
+        return self.is_visible(locator, timeout)
 
     def get_tooltip_text(self, tariff_name):
         return self.get_text(self._format(TaxiPageLocators.TOOLTIP, tariff_name))
